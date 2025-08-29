@@ -163,6 +163,7 @@ export function PlayerMarkersOverlay({
       table: tables.ReverseMovablePosition,
     });
     const newPlayers: Player[] = [];
+    const seenPlayer: Set<string> = new Set();
     for (const { x, y, z } of Object.values(moveableEntities)) {
       const moveableRecord = stash.getRecord({
         table: tables.ReverseMovablePosition,
@@ -194,6 +195,11 @@ export function PlayerMarkersOverlay({
           slot: i,
         });
       }
+      if (seenPlayer.has(moveableRecord.entityId)) {
+        continue;
+      }
+      seenPlayer.add(moveableRecord.entityId);
+
       newPlayers.push({
         address: decodePlayer(moveableRecord.entityId),
         position: [x, y, z],
@@ -232,6 +238,10 @@ export function PlayerMarkersOverlay({
           slot: i,
         });
       }
+      if (seenPlayer.has(sleepingRecord.entityId)) {
+        continue;
+      }
+      seenPlayer.add(sleepingRecord.entityId);
       newPlayers.push({
         address: decodePlayer(sleepingRecord.entityId),
         position: [...decodePosition(sleepingRecord.bedEntityId)],
@@ -241,29 +251,7 @@ export function PlayerMarkersOverlay({
       });
     }
 
-    setPlayers((prevPlayers) => {
-      // Only update if the data has actually changed
-      if (prevPlayers.length !== newPlayers.length) {
-        return newPlayers;
-      }
-
-      // Check if any player data has changed
-      const hasChanged = newPlayers.some((newPlayer) => {
-        const existingPlayer = prevPlayers.find(
-          (p) => p.address === newPlayer.address
-        );
-        return (
-          !existingPlayer ||
-          existingPlayer.position[0] !== newPlayer.position[0] ||
-          existingPlayer.position[1] !== newPlayer.position[1] ||
-          existingPlayer.position[2] !== newPlayer.position[2] ||
-          existingPlayer.energy !== newPlayer.energy ||
-          existingPlayer.isSleeping !== newPlayer.isSleeping
-        );
-      });
-
-      return hasChanged ? newPlayers : prevPlayers;
-    });
+    setPlayers(newPlayers);
   }, []);
 
   const filteredPlayers = useMemo(
