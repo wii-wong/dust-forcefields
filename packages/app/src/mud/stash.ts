@@ -10,6 +10,8 @@ const selectedDustTables = {
   Energy: dustWorldConfig.tables.Energy,
   Fragment: dustWorldConfig.tables.Fragment,
   Machine: dustWorldConfig.tables.Machine,
+  ReverseMovablePosition: dustWorldConfig.tables.ReverseMovablePosition,
+  PlayerName: dustWorldConfig.tables.PlayerName,
 };
 
 const selectedProgramTables = {

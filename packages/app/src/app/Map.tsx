@@ -9,6 +9,7 @@ import { bounds, maxZoom, minZoom, tileSize } from "../config";
 import { MapControls } from "./MapControls";
 import { LocalPlayerMarker } from "./LocalPlayerMarker";
 import { ForceFieldOverlay } from "./ForceFieldOverlay";
+import { PlayerMarkersOverlay } from "./PlayerMarkersOverlay";
 
 // force map to re-render in dev
 const now = Date.now();
@@ -17,6 +18,10 @@ export function Map() {
   const [map, setMap] = useState<LMap | null>(null);
   const [currentZoom, setCurrentZoom] = useState(2);
   const playerPosition = usePlayerPositionQuery();
+  const [selectedEntity, setSelectedEntity] = useState<{
+    type: 'player' | 'forcefield';
+    id: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!map) return;
@@ -65,7 +70,14 @@ export function Map() {
         {playerPosition.data ? (
           <LocalPlayerMarker map={map} playerPosition={playerPosition.data} />
         ) : null}
-        <ForceFieldOverlay />
+        <ForceFieldOverlay 
+          selectedEntity={selectedEntity}
+          onSelectEntity={setSelectedEntity}
+        />
+        <PlayerMarkersOverlay 
+          selectedEntity={selectedEntity}
+          onSelectEntity={setSelectedEntity}
+        />
         <MapControls
           map={map}
           currentZoom={currentZoom}

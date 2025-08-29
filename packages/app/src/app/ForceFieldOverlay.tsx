@@ -295,14 +295,27 @@ function ForceFieldInfo({
   );
 }
 
-export function ForceFieldOverlay() {
+interface ForceFieldOverlayProps {
+  selectedEntity: {
+    type: 'player' | 'forcefield';
+    id: string;
+  } | null;
+  onSelectEntity: (entity: {
+    type: 'player' | 'forcefield';
+    id: string;
+  } | null) => void;
+}
+
+export function ForceFieldOverlay({ selectedEntity, onSelectEntity }: ForceFieldOverlayProps) {
   const syncStatus = useSyncStatus();
   const [showForceFields, setShowForceFields] = useState(true);
   const [forceFields, setForceFields] = useState<ForceField[]>([]);
-  const [selectedForceField, setSelectedForceField] =
-    useState<ForceField | null>(null);
   const [maxY, setMaxY] = useState(320);
   const [showSettings, setShowSettings] = useState(false);
+
+  const selectedForceField = forceFields.find(ff => 
+    selectedEntity?.type === 'forcefield' && selectedEntity.id === ff.entityId
+  ) || null;
 
   const updateForceFields = () => {
     const energyEntities = stash.getKeys({ table: tables.Energy });
@@ -394,8 +407,14 @@ export function ForceFieldOverlay() {
           <ForceFieldRectangles
             key={forceField.entityId || index}
             forceField={forceField}
-            isSelected={selectedForceField?.entityId === forceField.entityId}
-            onSelect={() => setSelectedForceField(forceField)}
+            isSelected={selectedEntity?.type === 'forcefield' && selectedEntity.id === forceField.entityId}
+            onSelect={() => {
+              if (selectedEntity?.type === 'forcefield' && selectedEntity.id === forceField.entityId) {
+                onSelectEntity(null);
+              } else {
+                onSelectEntity({ type: 'forcefield', id: forceField.entityId });
+              }
+            }}
             maxY={maxY}
           />
         ))}
@@ -410,7 +429,7 @@ export function ForceFieldOverlay() {
       />
       <ForceFieldInfo
         forceField={selectedForceField}
-        onClose={() => setSelectedForceField(null)}
+        onClose={() => onSelectEntity(null)}
       />
     </>
   );

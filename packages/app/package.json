@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dust/world": "https://pkg.pr.new/dustproject/dust/@dust/world@f2746c5",
-    "@dust/programs": "https://pkg.pr.new/dustproject/dust/@dust/programs@f2746c5",
+    "@dust/world": "https://pkg.pr.new/dustproject/dust/@dust/world@b5c12b4",
+    "@dust/programs": "https://pkg.pr.new/dustproject/dust/@dust/programs@b5c12b4",
     "@latticexyz/common": "2.2.23-5ebd3d31b6ab3fbbfa8994fefcbf46d4e44c6ec2",
     "@latticexyz/stash": "2.2.23-5ebd3d31b6ab3fbbfa8994fefcbf46d4e44c6ec2",
     "@latticexyz/store-sync": "2.2.23-5ebd3d31b6ab3fbbfa8994fefcbf46d4e44c6ec2",
@@ -19,7 +19,7 @@
     "@tanstack/react-query": "^5.63.0",
     "@react-leaflet/core": "^3.0.0",
     "react-leaflet": "5.0.0-rc.2",
-    "dustkit": "https://pkg.pr.new/dustproject/dust/dustkit@f2746c5",
+    "dustkit": "https://pkg.pr.new/dustproject/dust/dustkit@b5c12b4",
     "leaflet": "^1.9.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

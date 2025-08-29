@@ -1,6 +1,6 @@
 import type { Hex } from "viem";
 import { useENS } from "./useENS";
-import { useDustName } from "./useDustName";
+import { usePlayerName } from "./usePlayerName";
 import { TruncatedHex } from "./TruncatedHex";
 
 export type Props = {
@@ -8,11 +8,11 @@ export type Props = {
 };
 
 export function AccountName({ address }: Props) {
-  const { data: user } = useDustName(address);
+  const playerName = usePlayerName(address);
   const { data: ens } = useENS(address);
   return (
     <span className="font-medium">
-      {user?.username ?? ens?.name ?? <TruncatedHex hex={address} />}
+      {playerName ?? ens?.name ?? <TruncatedHex hex={address} />}
     </span>
   );
 }
