@@ -3,7 +3,12 @@ import { createPortal } from "react-dom";
 import { Marker, useMap } from "react-leaflet";
 import { Icon, type LatLngExpression } from "leaflet";
 import { worldToMapCoordinates } from "../config";
-import { encodeBlock, encodePlayer, type Vec3 } from "@dust/world/internal";
+import {
+  encodeBlock,
+  encodePlayer,
+  objectsById,
+  type Vec3,
+} from "@dust/world/internal";
 import type { Hex } from "viem";
 import { AccountName } from "../common/AccountName";
 import { useDustClient } from "../common/useDustClient";
@@ -99,8 +104,8 @@ function InventoryModal({
   };
 
   return createPortal(
-    <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border-2 border-gray-300">
-      <div className="flex justify-between items-center p-4 border-b">
+    <div className="relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 border-2 border-gray-300">
+      <div className="flex justify-between items-center p-3 border-b">
         <h2 className="text-lg font-semibold">Player Inventory</h2>
         <button
           onClick={onClose}
@@ -109,7 +114,7 @@ function InventoryModal({
           ✕
         </button>
       </div>
-      <div className="p-4">
+      <div className="p-3">
         <div className="grid *:col-start-1 *:row-start-1">
           <div
             key={inventory.owner}
@@ -119,6 +124,11 @@ function InventoryModal({
               <div
                 key={item.slot}
                 className="aspect-square rounded inline-grid *:col-start-1 *:row-start-1 border border-gray-400 bg-gray-100"
+                title={
+                  item.objectType > 0
+                    ? `${objectsById[item.objectType]?.name}`
+                    : "Empty slot"
+                }
               >
                 {item.objectType > 0 && (
                   <>
