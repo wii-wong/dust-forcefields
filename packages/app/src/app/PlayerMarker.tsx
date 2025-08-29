@@ -13,6 +13,7 @@ export type Player = {
   address: Hex;
   energy: bigint;
   position: Vec3;
+  isSleeping: boolean;
 };
 
 interface PlayerMarkerProps {
@@ -23,18 +24,25 @@ interface PlayerMarkerProps {
   onClose: () => void;
 }
 
-const createPlayerIcon = (isAlive: boolean, isSelected: boolean) => new Icon({
-  iconUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
-    <svg width="${isSelected ? 32 : 24}" height="${isSelected ? 32 : 24}" xmlns="http://www.w3.org/2000/svg">
-      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="${isSelected ? 20 : 16}">
-        ${isAlive ? '👤' : '💀'}
+const createPlayerIcon = (player: Player, isSelected: boolean) => {
+  const size = isSelected ? 30 : 24;
+  const circleRadius = isSelected ? 13 : 10;
+  const fontSize = isSelected ? 14 : 11;
+  
+  return new Icon({
+    iconUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+    <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="${size/2}" cy="${size/2}" r="${circleRadius}" fill="white" stroke="#333" stroke-width="${isSelected ? 2 : 1}" opacity="0.9"/>
+      <text x="${size/2 + 1.5}" y="${size/2 + fontSize/4}" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}">
+        ${player.isSleeping ? "🛏️" : player.energy > 0 ? "👤" : "💀"}
       </text>
     </svg>
   `)}`,
-  iconSize: [isSelected ? 32 : 24, isSelected ? 32 : 24],
-  iconAnchor: [isSelected ? 16 : 12, isSelected ? 16 : 12],
-  popupAnchor: [0, isSelected ? -16 : -12],
-});
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
+};
 
 const maxPlayerEnergy = 817600000000000000n;
 
@@ -80,7 +88,7 @@ function PlayerInfo({
     <div className="bg-white border border-gray-300 rounded shadow-lg p-4 max-w-sm">
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-bold mr-1" style={{ fontSize: "1rem" }}>
-          {player.energy > 0 ? "👤" : "💀"}{" "}
+          {player.isSleeping ? "🛏️" : player.energy > 0 ? "👤" : "💀"}{" "}
           <span
             className={`${dustClient ? "cursor-pointer hover:text-blue-600" : ""}`}
             onClick={() => {
@@ -150,14 +158,12 @@ export function PlayerMarker({
   const mapCoordinates = worldToMapCoordinates(
     player.position
   ) as LatLngExpression;
-  
-  const isAlive = player.energy > 0;
 
   return (
     <>
       <Marker
         position={mapCoordinates}
-        icon={createPlayerIcon(isAlive, isSelected)}
+        icon={createPlayerIcon(player, isSelected)}
         eventHandlers={{
           click: onSelect,
         }}

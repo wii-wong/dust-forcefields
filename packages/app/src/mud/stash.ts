@@ -8,10 +8,11 @@ import { redstone } from "./redstone";
 
 const selectedDustTables = {
   Energy: dustWorldConfig.tables.Energy,
+  PlayerName: dustWorldConfig.tables.PlayerName,
   Fragment: dustWorldConfig.tables.Fragment,
   Machine: dustWorldConfig.tables.Machine,
   ReverseMovablePosition: dustWorldConfig.tables.ReverseMovablePosition,
-  PlayerName: dustWorldConfig.tables.PlayerName,
+  PlayerBed: dustWorldConfig.tables.PlayerBed,
 };
 
 const selectedProgramTables = {
