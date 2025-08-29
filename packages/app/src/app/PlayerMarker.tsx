@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Marker, useMap } from "react-leaflet";
-import { Icon, LatLngExpression } from "leaflet";
-import { worldToMapCoordinates, type Vec2 } from "../config";
+import { Icon, type LatLngExpression } from "leaflet";
+import { worldToMapCoordinates } from "../config";
 import { encodeBlock, encodePlayer, type Vec3 } from "@dust/world/internal";
 import type { Hex } from "viem";
 import { AccountName } from "../common/AccountName";
@@ -13,6 +13,11 @@ export type Player = {
   address: Hex;
   energy: bigint;
   position: Vec3;
+  inventory: {
+    objectType: number;
+    amount: number;
+    slot: number;
+  }[];
   isSleeping: boolean;
 };
 
@@ -28,12 +33,12 @@ const createPlayerIcon = (player: Player, isSelected: boolean) => {
   const size = isSelected ? 30 : 24;
   const circleRadius = isSelected ? 13 : 10;
   const fontSize = isSelected ? 14 : 11;
-  
+
   return new Icon({
     iconUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
     <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="${size/2}" cy="${size/2}" r="${circleRadius}" fill="white" stroke="#333" stroke-width="${isSelected ? 2 : 1}" opacity="0.9"/>
-      <text x="${size/2 + 1.5}" y="${size/2 + fontSize/4}" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}">
+      <circle cx="${size / 2}" cy="${size / 2}" r="${circleRadius}" fill="white" stroke="#333" stroke-width="${isSelected ? 2 : 1}" opacity="0.9"/>
+      <text x="${size / 2 + 1.5}" y="${size / 2 + fontSize / 4}" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}">
         ${player.isSleeping ? "🛏️" : player.energy > 0 ? "👤" : "💀"}
       </text>
     </svg>
@@ -46,12 +51,105 @@ const createPlayerIcon = (player: Player, isSelected: boolean) => {
 
 const maxPlayerEnergy = 817600000000000000n;
 
-function PlayerInfo({
+function InventoryModal({
   player,
   onClose,
 }: {
+  player: Player;
+  onClose: () => void;
+}) {
+  const map = useMap();
+  const [controlElement, setControlElement] = useState<HTMLDivElement | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!map) return;
+
+    const control = new (window as any).L.Control({ position: "topleft" });
+
+    control.onAdd = function () {
+      const div = (window as any).L.DomUtil.create("div", "");
+      div.style.position = "fixed";
+      div.style.top = "50%";
+      div.style.left = "50%";
+      div.style.transform = "translate(-50%, -50%)";
+      div.style.zIndex = "1000";
+      (window as any).L.DomEvent.disableClickPropagation(div);
+      (window as any).L.DomEvent.disableScrollPropagation(div);
+      setControlElement(div);
+      return div;
+    };
+
+    control.addTo(map);
+
+    return () => {
+      if (controlElement) {
+        setControlElement(null);
+      }
+      map.removeControl(control);
+    };
+  }, [map]);
+
+  if (!controlElement) return null;
+
+  const inventory = {
+    owner: player.address,
+    items: player.inventory,
+  };
+
+  return createPortal(
+    <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border-2 border-gray-300">
+      <div className="flex justify-between items-center p-4 border-b">
+        <h2 className="text-lg font-semibold">Player Inventory</h2>
+        <button
+          onClick={onClose}
+          className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded text-gray-500 hover:text-gray-700"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="p-4">
+        <div className="grid *:col-start-1 *:row-start-1">
+          <div
+            key={inventory.owner}
+            className="inline-grid grid-cols-9 gap-1.5 p-3 bg-slate-950/30 rounded"
+          >
+            {inventory.items.map((item) => (
+              <div
+                key={item.slot}
+                className="aspect-square rounded inline-grid *:col-start-1 *:row-start-1 border border-gray-400 bg-gray-100"
+              >
+                {item.objectType > 0 && (
+                  <>
+                    <img
+                      src={`https://alpha.dustproject.org/api/assets/objects/${item.objectType}/icon`}
+                      className="size-full"
+                      alt={`Object ${item.objectType}`}
+                    />
+                    <span className="place-self-end text-sm leading-none backdrop-blur bg-black/20 px-1 py-0.5 rounded overflow-hidden">
+                      {item.amount}
+                    </span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>,
+    controlElement
+  );
+}
+
+function PlayerInfo({
+  player,
+  onClose,
+  onViewInventory,
+}: {
   player: Player | null;
   onClose: () => void;
+  onViewInventory: () => void;
 }) {
   const { data: dustClient } = useDustClient();
   const map = useMap();
@@ -142,6 +240,14 @@ function PlayerInfo({
             {(player.energy * 100n) / maxPlayerEnergy}%)
           </div>
         </div>
+        <div className="pt-2 border-t border-gray-200">
+          <button
+            onClick={onViewInventory}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded font-medium"
+          >
+            View Inventory
+          </button>
+        </div>
       </div>
     </div>,
     controlElement
@@ -155,9 +261,18 @@ export function PlayerMarker({
   onSelect,
   onClose,
 }: PlayerMarkerProps) {
+  const [showInventory, setShowInventory] = useState(false);
   const mapCoordinates = worldToMapCoordinates(
     player.position
   ) as LatLngExpression;
+
+  const handleViewInventory = () => {
+    setShowInventory(true);
+  };
+
+  const handleCloseInventory = () => {
+    setShowInventory(false);
+  };
 
   return (
     <>
@@ -168,7 +283,16 @@ export function PlayerMarker({
           click: onSelect,
         }}
       />
-      {showInfo && <PlayerInfo player={player} onClose={onClose} />}
+      {showInfo && (
+        <PlayerInfo
+          player={player}
+          onClose={onClose}
+          onViewInventory={handleViewInventory}
+        />
+      )}
+      {showInventory && (
+        <InventoryModal player={player} onClose={handleCloseInventory} />
+      )}
     </>
   );
 }

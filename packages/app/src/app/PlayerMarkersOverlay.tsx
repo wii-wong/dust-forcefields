@@ -13,6 +13,8 @@ import {
 import { zeroHash } from "viem";
 import { getOptimisticEnergy } from "../common/getOptimisticEnergy";
 
+const maxPlayerInventorySlots = 36;
+
 function PlayerMenu({
   playerCount,
   showPlayers,
@@ -180,11 +182,24 @@ export function PlayerMarkersOverlay({
       if (!energy?.energy) {
         continue;
       }
+      const playerInventory = [];
+      for (let i = 0; i < maxPlayerInventorySlots; i++) {
+        const inventorySlotRecord = stash.getRecord({
+          table: tables.InventorySlot,
+          key: { owner: moveableRecord.entityId, slot: i },
+        });
+        playerInventory.push({
+          objectType: inventorySlotRecord?.objectType ?? 0,
+          amount: inventorySlotRecord?.amount ?? 0,
+          slot: i,
+        });
+      }
       newPlayers.push({
         address: decodePlayer(moveableRecord.entityId),
         position: [x, y, z],
         energy: getOptimisticEnergy(energy) ?? 0n,
         isSleeping: false,
+        inventory: playerInventory,
       });
     }
     const sleepingEntities = stash.getKeys({
@@ -205,11 +220,24 @@ export function PlayerMarkersOverlay({
       if (!energy?.energy) {
         continue;
       }
+      const playerInventory = [];
+      for (let i = 0; i < maxPlayerInventorySlots; i++) {
+        const inventorySlotRecord = stash.getRecord({
+          table: tables.InventorySlot,
+          key: { owner: sleepingRecord.entityId, slot: i },
+        });
+        playerInventory.push({
+          objectType: inventorySlotRecord?.objectType ?? 0,
+          amount: inventorySlotRecord?.amount ?? 0,
+          slot: i,
+        });
+      }
       newPlayers.push({
         address: decodePlayer(sleepingRecord.entityId),
         position: [...decodePosition(sleepingRecord.bedEntityId)],
         energy: energy.energy, //TODO: calc optimistic energy based on force field
         isSleeping: true,
+        inventory: playerInventory,
       });
     }
 

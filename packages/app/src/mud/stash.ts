@@ -13,6 +13,7 @@ const selectedDustTables = {
   Machine: dustWorldConfig.tables.Machine,
   ReverseMovablePosition: dustWorldConfig.tables.ReverseMovablePosition,
   PlayerBed: dustWorldConfig.tables.PlayerBed,
+  InventorySlot: dustWorldConfig.tables.InventorySlot,
 };
 
 const selectedProgramTables = {
