@@ -284,6 +284,13 @@ export function PlayerMarker({
     setShowInventory(false);
   };
 
+  // Close inventory when this player is no longer selected
+  useEffect(() => {
+    if (!showInfo && showInventory) {
+      setShowInventory(false);
+    }
+  }, [showInfo, showInventory]);
+
   return (
     <>
       <Marker
