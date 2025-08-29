@@ -274,8 +274,8 @@ export function PlayerMarkersOverlay({
     if (!syncStatus.isLive) return;
     updatePlayers();
 
-    // call updatePlayers every 10 seconds
-    const interval = setInterval(updatePlayers, 10000);
+    // call updatePlayers every 5 seconds
+    const interval = setInterval(updatePlayers, 5000);
     return () => clearInterval(interval);
   }, [syncStatus, updatePlayers]);
 
