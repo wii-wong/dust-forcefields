@@ -71,15 +71,10 @@ function InventoryModal({
   useEffect(() => {
     if (!map) return;
 
-    const control = new (window as any).L.Control({ position: "topleft" });
+    const control = new (window as any).L.Control({ position: "bottomleft" });
 
     control.onAdd = function () {
-      const div = (window as any).L.DomUtil.create("div", "");
-      div.style.position = "fixed";
-      div.style.top = "50%";
-      div.style.left = "50%";
-      div.style.transform = "translate(-50%, -50%)";
-      div.style.zIndex = "1000";
+      const div = (window as any).L.DomUtil.create("div", "leaflet-control");
       (window as any).L.DomEvent.disableClickPropagation(div);
       (window as any).L.DomEvent.disableScrollPropagation(div);
       setControlElement(div);
