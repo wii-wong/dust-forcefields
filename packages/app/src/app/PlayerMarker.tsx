@@ -183,7 +183,7 @@ function PlayerInfo({
       }
       map.removeControl(control);
     };
-  }, [map, player]);
+  }, [map, !!player]);
 
   if (!player || !controlElement) return null;
 
