@@ -1,5 +1,5 @@
 # DUST Force Fields Map App
 
-<img width="813" height="637" alt="image" src="https://github.com/user-attachments/assets/fbe18a39-9dc0-41e8-b9b4-035f600d9d6b" />
+<img width="1505" height="854" alt="Screenshot 2025-08-31 at 1 14 29 PM" src="https://github.com/user-attachments/assets/4d3456c1-4862-4151-a952-632204bf6c76" />
 
-<img width="3016" height="1700" alt="image" src="https://github.com/user-attachments/assets/34745d40-7464-4442-867a-22a4a42680cc" />
+<img width="813" height="639" alt="Screenshot 2025-08-31 at 1 16 21 PM" src="https://github.com/user-attachments/assets/0fb3f9d5-a7f8-4094-9b23-cfe46acc9694" />
