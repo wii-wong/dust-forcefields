@@ -206,6 +206,7 @@ export function PlayerMarkersOverlay({
         energy: getOptimisticEnergy(energy) ?? 0n,
         isSleeping: false,
         inventory: playerInventory,
+        lastUpdated: energy.lastUpdatedTime,
       });
     }
     const sleepingEntities = stash.getKeys({
@@ -248,6 +249,7 @@ export function PlayerMarkersOverlay({
         energy: energy.energy, //TODO: calc optimistic energy based on force field
         isSleeping: true,
         inventory: playerInventory,
+        lastUpdated: energy.lastUpdatedTime,
       });
     }
 

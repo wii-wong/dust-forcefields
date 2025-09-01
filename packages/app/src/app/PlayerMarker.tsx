@@ -17,6 +17,7 @@ import { TruncatedHex } from "../common/TruncatedHex";
 export type Player = {
   address: Hex;
   energy: bigint;
+  lastUpdated: bigint;
   position: Vec3;
   inventory: {
     objectType: number;
@@ -55,6 +56,25 @@ const createPlayerIcon = (player: Player, isSelected: boolean) => {
 };
 
 const maxPlayerEnergy = 817600000000000000n;
+
+function formatRelativeTime(timestamp: number): string {
+  const now = Date.now();
+  const diffMs = now - timestamp;
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffDays > 0) {
+    return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+  } else if (diffHours > 0) {
+    return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+  } else if (diffMinutes > 0) {
+    return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
+  } else {
+    return "just now";
+  }
+}
 
 function InventoryModal({
   player,
@@ -243,6 +263,24 @@ function PlayerInfo({
           <div className="font-mono text-xs break-all select-text cursor-text">
             {(player.energy / BigInt(10 ** 14)).toLocaleString()} (
             {(player.energy * 100n) / maxPlayerEnergy}%)
+          </div>
+          <div className="mt-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500 font-medium">
+                Last Updated:
+              </span>
+              <a
+                href={`https://explorer.mud.dev/redstone/worlds/0x253eb85B3C953bFE3827CC14a151262482E7189C/interact?expanded=root%2C0x73790000000000000000000000000000416374697661746553797374656d0000&filter=activa&args=%5B%22${player.address}%22%5D#0x73790000000000000000000000000000416374697661746553797374656d0000-0xed05304adc3080dd9dda9811787be1f2aa5deb71547cde10966856aaf77c70f7`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-white px-2 py-1 rounded"
+              >
+                Update
+              </a>
+            </div>
+            <div className="text-xs text-gray-500 mt-0.5">
+              {formatRelativeTime(Number(player.lastUpdated * 1000n))}
+            </div>
           </div>
         </div>
         <div className="pt-2 border-t border-gray-200">
