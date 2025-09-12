@@ -1,5 +1,7 @@
-import { redstone as redstoneChain } from "@latticexyz/common/chains";
-import type { Chain } from "viem";
+import {
+  redstone as redstoneChain,
+  type MUDChain,
+} from "@latticexyz/common/chains";
 
 export const redstone = {
   ...redstoneChain,
@@ -10,4 +12,5 @@ export const redstone = {
       webSocket: ["wss://wiresaw.redstonechain.com"],
     },
   },
-} satisfies Chain;
+  indexerUrl: "https://indexer.alpha.dustproject.org",
+} satisfies MUDChain;
