@@ -270,7 +270,7 @@ function PlayerInfo({
                 Last Updated:
               </span>
               <a
-                href={`https://explorer.mud.dev/redstone/worlds/0x253eb85B3C953bFE3827CC14a151262482E7189C/interact?expanded=root%2C0x73790000000000000000000000000000416374697661746553797374656d0000&filter=activa&args=%5B%22${player.address}%22%5D#0x73790000000000000000000000000000416374697661746553797374656d0000-0xed05304adc3080dd9dda9811787be1f2aa5deb71547cde10966856aaf77c70f7`}
+                href={`https://explorer.alpha.dustproject.org/worlds/0x253eb85B3C953bFE3827CC14a151262482E7189C/interact?expanded=root%2C0x73790000000000000000000000000000416374697661746553797374656d0000&filter=activa&args=%5B%22${player.address}%22%5D#0x73790000000000000000000000000000416374697661746553797374656d0000-0xed05304adc3080dd9dda9811787be1f2aa5deb71547cde10966856aaf77c70f7`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-white px-2 py-1 rounded"

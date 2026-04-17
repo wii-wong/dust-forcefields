@@ -4,7 +4,7 @@ import dustWorldConfig from "@dust/world/mud.config";
 import dustProgramsConfig from "@dust/programs/mud.config";
 import { worldAddress } from "../common/worldAddress";
 import { syncToStash } from "@latticexyz/store-sync/internal";
-import { redstone } from "./redstone";
+import { dustChain } from "./dustChain";
 
 const selectedDustTables = {
   Energy: dustWorldConfig.tables.Energy,
@@ -51,6 +51,6 @@ await syncToStash({
   address: worldAddress,
   stash,
   filters,
-  internal_clientOptions: { chain: redstone },
-  indexerUrl: redstone.indexerUrl,
+  internal_clientOptions: { chain: dustChain },
+  indexerUrl: dustChain.indexerUrl,
 });
